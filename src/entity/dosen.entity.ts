@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Mahasiswa } from "./mahasiswa.entity";
 
 export enum DosenType {
   NIP = "NIP",
@@ -19,4 +20,6 @@ export class Dosen {
   created_at: Date;
   @Column({type:'timestamp', nullable:false, default: null})
   updated_at: Date;
+  @OneToMany(() => Mahasiswa, mahasiswa => mahasiswa.dosen1)
+  mahasiswa: Mahasiswa[];
 }

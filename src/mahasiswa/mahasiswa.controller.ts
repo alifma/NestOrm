@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { UpdateMahasiswaDTO } from 'src/dto/mahasiswa.dto';
 import { ExecResponseDTO, StandardResponseDTO } from 'src/dto/standard-response.dto';
 import { Mahasiswa } from 'src/entity/mahasiswa.entity';
 import { MahasiswaService } from './mahasiswa.service';
@@ -29,5 +30,15 @@ export class MahasiswaController {
   @Post()
   CreateNew(@Body() createMhsDTO: Mahasiswa): ExecResponseDTO {
     return this.mahasiswaService.create(createMhsDTO)
+  }
+
+  @Delete(':id')
+  async DeleteData(@Param('id') id: number): Promise<ExecResponseDTO> {
+    return  this.mahasiswaService.delete(id);
+  }
+
+  @Put(':id')
+  Update(@Param('id') id :number, @Body() createMhsDTO: UpdateMahasiswaDTO): Promise<ExecResponseDTO> {
+    return this.mahasiswaService.update(id, createMhsDTO)
   }
 }

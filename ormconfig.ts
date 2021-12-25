@@ -14,7 +14,7 @@ const ormConfig: MysqlConnectionOptions = {
   ],
   cli: {
     migrationsDir: 'src/db/migrations'
-  }
+  },
 }
 
 export default ormConfig;

@@ -10,7 +10,9 @@ export class AppService {
     return 'Hello World!';
   }
   getAll(): Promise<User[]> {
-    return this.usersRepository.find();
+    return this.usersRepository.createQueryBuilder("user")
+    .leftJoinAndSelect("user.photos", "photo")
+    .getMany();
   }
 
   async getOneById(id:number): Promise<User> {
