@@ -2,15 +2,24 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import config from 'ormconfig'
 import { User } from './entity/user.entity';
 import { MahasiswaModule } from './mahasiswa/mahasiswa.module';
 import { Photo } from './entity/photo.entity';
 import { PhotoModule } from './photo/photo.module';
+import { ConfigModule } from '@nestjs/config';
+import { config } from 'config';
+import { DatabaseConfig } from 'database.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(config),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [config]
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useClass: DatabaseConfig
+    }),
     TypeOrmModule.forFeature([User, Photo]),
     MahasiswaModule,
     PhotoModule
