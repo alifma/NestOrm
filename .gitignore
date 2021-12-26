@@ -36,4 +36,7 @@ lerna-debug.log*
 
 # Configmap
 .env
+.envdev
+.envprod
 src/db/seed/
+src/db/migrations/

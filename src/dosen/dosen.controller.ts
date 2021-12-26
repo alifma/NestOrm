@@ -15,8 +15,7 @@ export class DosenController {
     @Query('limit') limit:number,
     @Query('sort') sort:string
     ): Promise<StandardResponseDTO> {
-    const responseGetMhsw = await this.dosenService.getAll(limit, page, sort);
-    return responseGetMhsw
+    return await this.dosenService.getAll(limit, page, sort);
   }
 
   @Get(':id')
