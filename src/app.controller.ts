@@ -8,7 +8,6 @@ import { User } from './entity/user.entity';
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
     private readonly authService: AuthService
   ) {}
   @Post('login')
@@ -16,10 +15,4 @@ export class AppController {
   login(@Request() req: any): any {
     return this.authService.login(req.user);
   } 
-
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  async getHello(): Promise<User[]> {
-    return this.appService.getAll(); 
-  }
 }

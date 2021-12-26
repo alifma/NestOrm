@@ -16,7 +16,7 @@ export class Dosen {
   tipe: DosenType;
   @Column({type:'varchar', length:20 , default:'', nullable:true})
   nomor: string;
-  @Column({type:'timestamp', nullable:false, default:  () => 'CURRENT_TIMESTAMP'})
+  @Column({type:'timestamp', nullable:true, default:  () => 'CURRENT_TIMESTAMP'})
   created_at: Date;
   @Column({type:'timestamp', nullable:true})
   updated_at: Date;

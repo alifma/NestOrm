@@ -6,11 +6,11 @@ export class User {
     id: number;
     @Column({length:10, nullable:false})
     username: string;
-    @Column({length:50, nullable:false})
+    @Column({nullable:false})
     password: string;
     @Column({length:50, nullable:true})
     nama: string;
-    @Column({type:'timestamp', nullable:false, default:  () => 'CURRENT_TIMESTAMP'})
+    @Column({type:'timestamp', nullable:true, default:  () => 'CURRENT_TIMESTAMP'})
     created_at: Date;
     @Column({type:'timestamp', nullable:true})
     updated_at: Date;

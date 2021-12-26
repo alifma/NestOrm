@@ -15,7 +15,7 @@ export class Mahasiswa {
   nomor_hp: string;
   @Column({type:'varchar', nullable:true})
   judul: string;
-  @Column({type:'timestamp', nullable:false, default:  () => 'CURRENT_TIMESTAMP'})
+  @Column({type:'timestamp', nullable:true, default:  () => 'CURRENT_TIMESTAMP'})
   created_at: Date;
   @Column({type:'timestamp', nullable:true})
   updated_at: Date;
