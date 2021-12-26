@@ -15,4 +15,9 @@ export class AppController {
   login(@Request() req: any): any {
     return this.authService.login(req.user);
   } 
+
+  @Get()
+  helloWorld():{status: boolean, desc: string} {
+    return {status: true, desc: "deployed"}
+  }
 }
