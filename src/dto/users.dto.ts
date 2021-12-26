@@ -14,6 +14,7 @@ export class UpdateUserDTO {
 }
 
 export class ListUserDTO {
+  id: number;
   username: string;
   nama: string;
   level: number;

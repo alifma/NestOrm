@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/user.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDTO, UpdateUserDTO } from 'src/dto/users.dto';
+import { CreateUserDTO, ListUserDTO, UpdateUserDTO } from 'src/dto/users.dto';
 import * as bcrypt from 'bcrypt';
-import { ExecResponseDTO } from 'src/dto/standard-response.dto';
+import { ExecResponseDTO, StandardResponseDTO } from 'src/dto/standard-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -17,8 +17,45 @@ export class UsersService {
     return await this.usersRepository.findOne({username: username})
   }
 
-  getAll(): Promise<User[]> {
-    return this.usersRepository.find()
+  async getAll(limit: number, page:number, sort:string): Promise <StandardResponseDTO> {
+    const count:number = await this.getCountParticipant()
+    if (!page) {
+      page = 1
+    }
+    if (!limit) {
+      limit = 20
+    }
+    if (!sort || (sort.toUpperCase() !== 'ASC' && sort.toUpperCase() !== 'DESC')) {
+      sort = 'ASC'
+    }
+    const totalPage:number = Math.ceil(count/limit) 
+    try {
+      let finalRes:StandardResponseDTO
+      await this.usersRepository.manager.query(`
+      SELECT 
+        user.id as id, 
+        user.username as username,
+        user.nama as nama,
+        user.level as level
+      FROM user
+      ORDER BY user.id `+sort+` LIMIT ? OFFSET ? 
+      `, [limit, limit*(page-1)])
+        .then((res: ListUserDTO[]) => {
+          finalRes = {
+            total_pages: totalPage,
+            per_page: limit,
+            total_data:count,
+            page:page,
+            list:res
+          }
+        })
+        .catch((err) => {
+          throw err
+        })
+    return finalRes
+    } catch (error) {
+      throw error
+    }
   }
 
   async getOneById(id:number): Promise<User> {
@@ -86,5 +123,7 @@ export class UsersService {
       }
     }
   }
-  
+  async getCountParticipant(): Promise<number> {
+    return await this.usersRepository.count()
+  }  
 }

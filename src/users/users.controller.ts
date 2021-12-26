@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ExecResponseDTO } from 'src/dto/standard-response.dto';
+import { ExecResponseDTO, StandardResponseDTO } from 'src/dto/standard-response.dto';
 import { CreateUserDTO, ListUserDTO } from 'src/dto/users.dto';
 import { UsersService } from './users.service';
 
@@ -9,8 +9,12 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   @Get()
-  async getAll():Promise<ListUserDTO[]> {
-    return await this.usersService.getAll()
+  async GetAll(
+    @Query('page') page:number,
+    @Query('limit') limit:number,
+    @Query('sort') sort:string
+    ): Promise<StandardResponseDTO> {
+    return await this.usersService.getAll(page, limit, sort)
   }
 
   @Get(':id')
