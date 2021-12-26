@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { config } from 'config';
 import { DatabaseConfig } from 'database.config';
 import { DosenModule } from './dosen/dosen.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import { DosenModule } from './dosen/dosen.module';
     }),
     TypeOrmModule.forFeature([User]),
     MahasiswaModule,
-    DosenModule
+    DosenModule,
+    AuthModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService],

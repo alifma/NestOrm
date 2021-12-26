@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { createDosenDTO, ItemDetailDosenDTO, UpdateDosenDTO } from 'src/dto/dosen.dto';
 import { ExecResponseDTO, StandardResponseDTO } from 'src/dto/standard-response.dto';
 import { DosenService } from './dosen.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('dosen')
 export class DosenController {
   constructor(private readonly dosenService: DosenService) {}

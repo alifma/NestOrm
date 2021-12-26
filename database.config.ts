@@ -9,3 +9,10 @@ export class DatabaseConfig implements TypeOrmOptionsFactory {
       return this.configService.get('database');
   }
 }
+
+export class JwtConfig {
+  constructor(private configService: ConfigService){}
+  createJWTConfig(): string {
+    return this.configService.get('jwt_secret');
+  }
+}

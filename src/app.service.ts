@@ -21,13 +21,13 @@ export class AppService {
   }
 
   createUser(name:string): Promise<User> {
-    const newUser = this.usersRepository.create({name: name});
+    const newUser = this.usersRepository.create({nama: name});
     return this.usersRepository.save(newUser);
   }
 
   async updateUser(id:number, name:string): Promise<User> {
     const user = await this.getOneById(id);
-    user.name = name
+    user.nama = name
     return this.usersRepository.save(user); 
   }
 

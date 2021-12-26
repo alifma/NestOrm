@@ -1,4 +1,5 @@
 export const config = () => ({
+  jwt_secret: process.env.JWT_SECRET,
   database: {
     type: 'mysql',
     host: process.env.DB_HOST,

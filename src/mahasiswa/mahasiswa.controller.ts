@@ -1,9 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { DetailMahasiswaDTO, UpdateMahasiswaDTO } from 'src/dto/mahasiswa.dto';
 import { ExecResponseDTO, StandardResponseDTO } from 'src/dto/standard-response.dto';
 import { Mahasiswa } from 'src/entity/mahasiswa.entity';
 import { MahasiswaService } from './mahasiswa.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('mahasiswa')
 export class MahasiswaController {
   constructor(private readonly mahasiswaService: MahasiswaService) {}
