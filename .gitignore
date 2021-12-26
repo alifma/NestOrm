@@ -36,3 +36,5 @@ lerna-debug.log*
 
 # Configmap
 .env
+.vscode
+src/db/seed/

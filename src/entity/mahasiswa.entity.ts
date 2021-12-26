@@ -17,7 +17,7 @@ export class Mahasiswa {
   judul: string;
   @Column({type:'timestamp', nullable:false, default:  () => 'CURRENT_TIMESTAMP'})
   created_at: Date;
-  @Column({type:'timestamp', nullable:false, default: null})
+  @Column({type:'timestamp', nullable:true})
   updated_at: Date;
   @ManyToOne(() => Dosen, dosen => dosen.mahasiswa)
   dosen1: number;

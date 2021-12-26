@@ -11,8 +11,9 @@ export const config = () => ({
     migrations: [
       'dist/src/db/migrations/*.js'
     ],
+    logging: true,
     cli: {
       migrationsDir: 'src/db/migrations'
-    },
+    }
   }
 });

@@ -4,11 +4,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './entity/user.entity';
 import { MahasiswaModule } from './mahasiswa/mahasiswa.module';
-import { Photo } from './entity/photo.entity';
-import { PhotoModule } from './photo/photo.module';
 import { ConfigModule } from '@nestjs/config';
 import { config } from 'config';
 import { DatabaseConfig } from 'database.config';
+import { DosenModule } from './dosen/dosen.module';
 
 @Module({
   imports: [
@@ -20,9 +19,9 @@ import { DatabaseConfig } from 'database.config';
       imports: [ConfigModule],
       useClass: DatabaseConfig
     }),
-    TypeOrmModule.forFeature([User, Photo]),
+    TypeOrmModule.forFeature([User]),
     MahasiswaModule,
-    PhotoModule
+    DosenModule
   ],
   controllers: [AppController],
   providers: [AppService],

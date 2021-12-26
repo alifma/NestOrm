@@ -1,18 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ExecResponseDTO } from './dto/standard-response.dto';
 import { User } from './entity/user.entity';
 
 @Injectable()
 export class AppService {
   constructor(@InjectRepository(User) private usersRepository: Repository<User>){}
-  getHello(): string {
-    return 'Hello World!';
-  }
   getAll(): Promise<User[]> {
-    return this.usersRepository.createQueryBuilder("user")
-    .leftJoinAndSelect("user.photos", "photo")
-    .getMany();
+    return this.usersRepository.find()
   }
 
   async getOneById(id:number): Promise<User> {

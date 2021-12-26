@@ -1,21 +1,23 @@
 import {
-  Injectable
+  Injectable, InternalServerErrorException, ValidationPipe
 } from '@nestjs/common';
 import {
   InjectRepository
 } from '@nestjs/typeorm';
-import { throwError } from 'rxjs';
 import {
+  DetailMahasiswaDTO,
+  ItemListMahasiswaDTO,
   UpdateMahasiswaDTO
 } from 'src/dto/mahasiswa.dto';
 import {
   Mahasiswa
 } from 'src/entity/mahasiswa.entity';
 import {
+  QueryFailedError,
   Repository
 } from 'typeorm';
 import {
-  ExecResponseDTO
+  ExecResponseDTO, StandardResponseDTO
 } from '../dto/standard-response.dto'
 
 @Injectable()
@@ -23,13 +25,44 @@ export class MahasiswaService {
   constructor(@InjectRepository(Mahasiswa) private mahasiswaRepository: Repository < Mahasiswa > ) {}
 
   // GetAll
-  async getAll(): Promise < [Mahasiswa[], number] > {
-    let UserList = await this.mahasiswaRepository
-      .createQueryBuilder("mahasiswa")
-      .leftJoinAndSelect("mahasiswa.dosen1", "dosen1")
-      .leftJoinAndSelect("mahasiswa.dosen2", "dosen2")
-      .getManyAndCount();
-    return UserList
+  async getAll(limit: number, page:number, sort:string): Promise <StandardResponseDTO> {
+    const count:number = await this.getCountParticipant()
+    if (!page) {
+      page = 1
+    }
+    if (!limit) {
+      limit = 20
+    }
+    if (!sort || (sort.toUpperCase() !== 'ASC' && sort.toUpperCase() !== 'DESC')) {
+      sort = 'ASC'
+    }
+    const totalPage:number = Math.ceil(count/limit) 
+    try {
+      let finalRes:StandardResponseDTO
+      await this.mahasiswaRepository.manager.query(`
+      SELECT 
+        mhs.id as id, 
+        mhs.nim as nim,
+        mhs.nama as nama
+      FROM mahasiswa mhs
+      ORDER BY mhs.nim `+sort+` LIMIT ? OFFSET ? 
+      `, [limit, limit*(page-1)])
+        .then((res: ItemListMahasiswaDTO[]) => {
+          finalRes = {
+            total_pages: totalPage,
+            per_page: limit,
+            total_data:count,
+            page:page,
+            list:res
+          }
+        })
+        .catch((err) => {
+          throw err
+        })
+    return finalRes
+    } catch (error) {
+      throw error
+    }
   }
 
   // GetDetail
@@ -116,4 +149,39 @@ export class MahasiswaService {
     }
   }
 
+  async getCountParticipant(): Promise<number> {
+    return await this.mahasiswaRepository.count()
+  }
+
+    // GetDetail
+  async getDetailed(reqId: number): Promise < DetailMahasiswaDTO > {
+    try {
+      return await this.mahasiswaRepository.manager.query(`
+      SELECT 
+        mhs.id as id, 
+        mhs.nim as nim, 
+        mhs.nama as nama, 
+        mhs.alamat as alamat, 
+        mhs.nomor_hp as nomor_hp, 
+        mhs.judul as judul, 
+        dsn1.nama as dosen1_nama, 
+        dsn1.nomor as dosen1_nomor,
+        dsn1.tipe as dosen1_tipe,
+        dsn2.nama as dosen2_nama, 
+        dsn2.nomor as dosen2_nomor,
+        dsn2.tipe as dosen2_tipe
+      FROM mahasiswa mhs
+      LEFT JOIN dosen dsn1 ON dsn1.id = mhs.dosen1Id
+      LEFT JOIN dosen dsn2 ON dsn2.id = mhs.dosen2Id
+      WHERE mhs.id = ?`, [reqId])
+        .then((res: DetailMahasiswaDTO[]) => {
+          return res[0]
+        })
+        .catch((err) => {
+          throw err
+        })
+    } catch (error) {
+      throw error
+    }
+  }
 }
