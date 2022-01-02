@@ -1,14 +1,12 @@
 import {
   Column,
   Entity,
-  JoinColumn,
-  JoinTable,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Dosen } from './dosen.entity';
+import { Mail } from './mail.entity';
 
 @Entity('mahasiswa')
 export class Mahasiswa {
@@ -32,8 +30,14 @@ export class Mahasiswa {
   created_at: Date;
   @Column({ type: 'timestamp', nullable: true })
   updated_at: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  tanggal_lulus: Date;
   @ManyToOne(() => Dosen, (dosen) => dosen.mahasiswa)
   dosen1: number;
   @ManyToOne(() => Dosen, (dosen) => dosen.mahasiswa)
   dosen2: number;
+  @ManyToOne(() => Dosen, (dosen) => dosen.mahasiswa)
+  ketua_penguji: number;
+  @OneToMany(() => Mail, (mail) => mail.mahasiswa)
+  mail: Mail[];
 }

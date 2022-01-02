@@ -68,7 +68,6 @@ export class DosenService {
         description: `New user is created`,
       };
     } catch (error) {
-      this.dosenRepository.save(newUser);
       return {
         status: false,
         description: `Create user failed, ${error}`,

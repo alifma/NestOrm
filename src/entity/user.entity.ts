@@ -7,6 +7,7 @@ import {
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Mail } from './mail.entity';
 import { Transaction } from './transaction.entity';
 
 @Entity()
@@ -31,4 +32,6 @@ export class User {
   level: number;
   @OneToMany(() => Transaction, (transaction) => transaction.user)
   transaction: Transaction[];
+  @OneToMany(() => Mail, (mail) => mail.user)
+  mail: Mail[];
 }

@@ -84,6 +84,7 @@ export class MahasiswaService {
         .createQueryBuilder('mahasiswa')
         .leftJoinAndSelect('mahasiswa.dosen1', 'dosen1')
         .leftJoinAndSelect('mahasiswa.dosen2', 'dosen2')
+        .leftJoinAndSelect('mahasiswa.ketua_penguji', 'ketua_penguji')
         .where({
           id: reqId,
         })
@@ -147,6 +148,8 @@ export class MahasiswaService {
           judul: req.judul,
           dosen1: req.dosen1,
           dosen2: req.dosen2,
+          ketua_penguji: req.ketua_penguji,
+          tanggal_lulus: req.tanggal_lulus,
           updated_at: () => 'CURRENT_TIMESTAMP',
         })
         .where('id = :id', {
@@ -182,15 +185,20 @@ export class MahasiswaService {
         mhs.alamat as alamat, 
         mhs.nomor_hp as nomor_hp, 
         mhs.judul as judul, 
+        mhs.tanggal_lulus as tanggal_lulus,
         dsn1.nama as dosen1_nama, 
         dsn1.nomor as dosen1_nomor,
         dsn1.tipe as dosen1_tipe,
         dsn2.nama as dosen2_nama, 
         dsn2.nomor as dosen2_nomor,
-        dsn2.tipe as dosen2_tipe
+        dsn2.tipe as dosen2_tipe,
+        ketPenguji.nama as ketua_penguji_nama, 
+        ketPenguji.nomor as ketua_penguji_nomor,
+        ketPenguji.tipe as ketua_penguji_tipe
       FROM mahasiswa mhs
       LEFT JOIN dosen dsn1 ON dsn1.id = mhs.dosen1Id
       LEFT JOIN dosen dsn2 ON dsn2.id = mhs.dosen2Id
+      LEFT JOIN dosen ketPenguji ON ketPenguji.id = mhs.ketuaPengujiId
       WHERE mhs.id = ?`,
           [reqId],
         )

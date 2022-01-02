@@ -8,5 +8,6 @@ import { DosenService } from './dosen.service';
   imports: [TypeOrmModule.forFeature([Dosen]), DosenModule],
   controllers: [DosenController],
   providers: [DosenService],
+  exports: [DosenService],
 })
 export class DosenModule {}
