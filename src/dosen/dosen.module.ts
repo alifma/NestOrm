@@ -5,11 +5,8 @@ import { DosenController } from './dosen.controller';
 import { DosenService } from './dosen.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Dosen]),
-    DosenModule
-  ],
+  imports: [TypeOrmModule.forFeature([Dosen]), DosenModule],
   controllers: [DosenController],
-  providers: [DosenService]
+  providers: [DosenService],
 })
 export class DosenModule {}

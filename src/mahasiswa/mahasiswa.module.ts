@@ -5,11 +5,8 @@ import { MahasiswaController } from './mahasiswa.controller';
 import { MahasiswaService } from './mahasiswa.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Mahasiswa]),
-    MahasiswaModule
-  ],
+  imports: [TypeOrmModule.forFeature([Mahasiswa]), MahasiswaModule],
   controllers: [MahasiswaController],
-  providers: [MahasiswaService]
+  providers: [MahasiswaService],
 })
 export class MahasiswaModule {}

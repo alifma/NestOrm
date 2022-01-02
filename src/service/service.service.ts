@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { createDosenDTO, UpdateDosenDTO } from 'src/dto/dosen.dto';
+import { CreateServiceDTO, UpdateServiceDTO } from 'src/dto/service.dto';
 import {
   ExecResponseDTO,
   StandardResponseDTO,
 } from 'src/dto/standard-response.dto';
-import { Dosen } from 'src/entity/dosen.entity';
+import { Service } from 'src/entity/service.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class DosenService {
+export class ServiceService {
   constructor(
-    @InjectRepository(Dosen) private dosenRepository: Repository<Dosen>,
+    @InjectRepository(Service) private serviceRepository: Repository<Service>,
   ) {}
   async getAll(
     limit: number,
@@ -33,7 +33,7 @@ export class DosenService {
     }
     const totalPage: number = Math.ceil(count / limit);
     try {
-      const res = await this.dosenRepository.find();
+      const res = await this.serviceRepository.find();
       return {
         total_pages: totalPage,
         per_page: limit,
@@ -46,29 +46,29 @@ export class DosenService {
     }
   }
 
-  async getOneById(id: number): Promise<Dosen> {
+  async getOneById(id: number): Promise<Service> {
     try {
-      const user = await this.dosenRepository.findOneOrFail(id);
+      const user = await this.serviceRepository.findOneOrFail(id);
       return user;
     } catch (error) {
       throw error;
     }
   }
 
-  create(req: createDosenDTO): ExecResponseDTO {
-    const newUser = this.dosenRepository.create({
+  create(req: CreateServiceDTO): ExecResponseDTO {
+    const newUser = this.serviceRepository.create({
       nama: req.nama,
-      nomor: req.nomor,
-      tipe: req.tipe,
+      harga: req.harga,
+      kode: req.kode,
     });
     try {
-      this.dosenRepository.save(newUser);
+      this.serviceRepository.save(newUser);
       return {
         status: true,
         description: `New user is created`,
       };
     } catch (error) {
-      this.dosenRepository.save(newUser);
+      this.serviceRepository.save(newUser);
       return {
         status: false,
         description: `Create user failed, ${error}`,
@@ -76,15 +76,15 @@ export class DosenService {
     }
   }
 
-  async update(id: number, data: UpdateDosenDTO): Promise<ExecResponseDTO> {
+  async update(id: number, data: UpdateServiceDTO): Promise<ExecResponseDTO> {
     try {
-      this.dosenRepository
+      this.serviceRepository
         .createQueryBuilder('mahasiswa')
-        .update(Dosen)
+        .update(Service)
         .set({
           nama: data.nama,
-          nomor: data.nomor,
-          tipe: data.tipe,
+          harga: data.harga,
+          kode: data.kode,
           updated_at: () => 'CURRENT_TIMESTAMP',
         })
         .where('id = :id', {
@@ -104,22 +104,22 @@ export class DosenService {
   }
 
   async delete(id: number): Promise<ExecResponseDTO> {
-    const user = await this.getOneById(id);
-    if (!user) {
+    const item = await this.getOneById(id);
+    if (!item) {
       return {
         status: false,
         description: `Delete failed, can't find data`,
       };
     } else {
-      this.dosenRepository.remove(user);
+      this.serviceRepository.remove(item);
       return {
         status: true,
-        description: `Data ${user.nomor} successfully deleted`,
+        description: `Data ${item.nama} successfully deleted`,
       };
     }
   }
 
   async getCount(): Promise<number> {
-    return await this.dosenRepository.count();
+    return await this.serviceRepository.count();
   }
 }

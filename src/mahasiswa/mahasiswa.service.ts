@@ -1,84 +1,96 @@
 import {
-  Injectable, InternalServerErrorException, ValidationPipe
+  Injectable,
+  InternalServerErrorException,
+  ValidationPipe,
 } from '@nestjs/common';
-import {
-  InjectRepository
-} from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import {
   DetailMahasiswaDTO,
   ItemListMahasiswaDTO,
-  UpdateMahasiswaDTO
+  UpdateMahasiswaDTO,
 } from 'src/dto/mahasiswa.dto';
+import { Mahasiswa } from 'src/entity/mahasiswa.entity';
+import { QueryFailedError, Repository } from 'typeorm';
 import {
-  Mahasiswa
-} from 'src/entity/mahasiswa.entity';
-import {
-  QueryFailedError,
-  Repository
-} from 'typeorm';
-import {
-  ExecResponseDTO, StandardResponseDTO
-} from '../dto/standard-response.dto'
+  ExecResponseDTO,
+  StandardResponseDTO,
+} from '../dto/standard-response.dto';
 
 @Injectable()
 export class MahasiswaService {
-  constructor(@InjectRepository(Mahasiswa) private mahasiswaRepository: Repository < Mahasiswa > ) {}
+  constructor(
+    @InjectRepository(Mahasiswa)
+    private mahasiswaRepository: Repository<Mahasiswa>,
+  ) {}
 
   // GetAll
-  async getAll(limit: number, page:number, sort:string): Promise <StandardResponseDTO> {
-    const count:number = await this.getCountParticipant()
+  async getAll(
+    limit: number,
+    page: number,
+    sort: string,
+  ): Promise<StandardResponseDTO> {
+    const count: number = await this.getCountParticipant();
     if (!page) {
-      page = 1
+      page = 1;
     }
     if (!limit) {
-      limit = 20
+      limit = 20;
     }
-    if (!sort || (sort.toUpperCase() !== 'ASC' && sort.toUpperCase() !== 'DESC')) {
-      sort = 'ASC'
+    if (
+      !sort ||
+      (sort.toUpperCase() !== 'ASC' && sort.toUpperCase() !== 'DESC')
+    ) {
+      sort = 'ASC';
     }
-    const totalPage:number = Math.ceil(count/limit) 
+    const totalPage: number = Math.ceil(count / limit);
     try {
-      let finalRes:StandardResponseDTO
-      await this.mahasiswaRepository.manager.query(`
+      let finalRes: StandardResponseDTO;
+      await this.mahasiswaRepository.manager
+        .query(
+          `
       SELECT 
         mhs.id as id, 
         mhs.nim as nim,
         mhs.nama as nama
       FROM mahasiswa mhs
-      ORDER BY mhs.nim `+sort+` LIMIT ? OFFSET ? 
-      `, [limit, limit*(page-1)])
+      ORDER BY mhs.nim ` +
+            sort +
+            ` LIMIT ? OFFSET ? 
+      `,
+          [limit, limit * (page - 1)],
+        )
         .then((res: ItemListMahasiswaDTO[]) => {
           finalRes = {
             total_pages: totalPage,
             per_page: limit,
-            total_data:count,
-            page:page,
-            list:res
-          }
+            total_data: count,
+            page: page,
+            list: res,
+          };
         })
         .catch((err) => {
-          throw err
-        })
-    return finalRes
+          throw err;
+        });
+      return finalRes;
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
   // GetDetail
-  async getDetail(reqId: number): Promise < Mahasiswa > {
+  async getDetail(reqId: number): Promise<Mahasiswa> {
     try {
       let UserDetail = await this.mahasiswaRepository
-        .createQueryBuilder("mahasiswa")
-        .leftJoinAndSelect("mahasiswa.dosen1", "dosen1")
-        .leftJoinAndSelect("mahasiswa.dosen2", "dosen2")
+        .createQueryBuilder('mahasiswa')
+        .leftJoinAndSelect('mahasiswa.dosen1', 'dosen1')
+        .leftJoinAndSelect('mahasiswa.dosen2', 'dosen2')
         .where({
-          id: reqId
+          id: reqId,
         })
-        .getOneOrFail()
-      return UserDetail
+        .getOneOrFail();
+      return UserDetail;
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
@@ -86,43 +98,47 @@ export class MahasiswaService {
   create(user: Mahasiswa): ExecResponseDTO {
     const newMhsw = this.mahasiswaRepository.create({
       nama: user.nama,
-      nim: user.nim
+      nim: user.nim,
     });
     try {
       this.mahasiswaRepository.save(newMhsw);
       return {
         status: true,
-        description: `User with NIM ${user.nim} is created`
-      }
+        description: `User with NIM ${user.nim} is created`,
+      };
     } catch (error) {
       return {
         status: false,
-        description: `Create user failed, ${error}`
-      }
+        description: `Create user failed, ${error}`,
+      };
     }
   }
 
   // Delete
-  async delete(reqId: number): Promise < ExecResponseDTO > {
-    const detailMhsw = await this.getDetail(reqId)
+  async delete(reqId: number): Promise<ExecResponseDTO> {
+    const detailMhsw = await this.getDetail(reqId);
     if (!detailMhsw) {
       return {
         status: false,
-        description: `Delete failed, can't find data`
-      }
+        description: `Delete failed, can't find data`,
+      };
     } else {
-      this.mahasiswaRepository.remove(detailMhsw)
+      this.mahasiswaRepository.remove(detailMhsw);
       return {
         status: true,
-        description: `Data with NIM: ${detailMhsw.nim} successfully deleted`
-      }
+        description: `Data with NIM: ${detailMhsw.nim} successfully deleted`,
+      };
     }
   }
 
   // Update
-  async update(userId: number, req: UpdateMahasiswaDTO): Promise < ExecResponseDTO > {
+  async update(
+    userId: number,
+    req: UpdateMahasiswaDTO,
+  ): Promise<ExecResponseDTO> {
     try {
-      this.mahasiswaRepository.createQueryBuilder('mahasiswa')
+      this.mahasiswaRepository
+        .createQueryBuilder('mahasiswa')
         .update(Mahasiswa)
         .set({
           nama: req.nama,
@@ -131,32 +147,34 @@ export class MahasiswaService {
           judul: req.judul,
           dosen1: req.dosen1,
           dosen2: req.dosen2,
-          updated_at: () => 'CURRENT_TIMESTAMP'
+          updated_at: () => 'CURRENT_TIMESTAMP',
         })
-        .where("id = :id", {
-          id: userId
+        .where('id = :id', {
+          id: userId,
         })
-        .execute()
+        .execute();
       return {
         status: true,
-        description: `User updated`
-      }
+        description: `User updated`,
+      };
     } catch (error) {
       return {
         status: false,
-        description: `Update user failed, ${error}`
-      }
+        description: `Update user failed, ${error}`,
+      };
     }
   }
 
   async getCountParticipant(): Promise<number> {
-    return await this.mahasiswaRepository.count()
+    return await this.mahasiswaRepository.count();
   }
 
-    // GetDetail
-  async getDetailed(reqId: number): Promise < DetailMahasiswaDTO > {
+  // GetDetail
+  async getDetailed(reqId: number): Promise<DetailMahasiswaDTO> {
     try {
-      return await this.mahasiswaRepository.manager.query(`
+      return await this.mahasiswaRepository.manager
+        .query(
+          `
       SELECT 
         mhs.id as id, 
         mhs.nim as nim, 
@@ -173,15 +191,17 @@ export class MahasiswaService {
       FROM mahasiswa mhs
       LEFT JOIN dosen dsn1 ON dsn1.id = mhs.dosen1Id
       LEFT JOIN dosen dsn2 ON dsn2.id = mhs.dosen2Id
-      WHERE mhs.id = ?`, [reqId])
+      WHERE mhs.id = ?`,
+          [reqId],
+        )
         .then((res: DetailMahasiswaDTO[]) => {
-          return res[0]
+          return res[0];
         })
         .catch((err) => {
-          throw err
-        })
+          throw err;
+        });
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 }

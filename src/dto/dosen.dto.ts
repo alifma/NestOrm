@@ -1,4 +1,4 @@
-import { DosenType } from "src/entity/dosen.entity";
+import { DosenType } from 'src/entity/dosen.entity';
 
 export class createDosenDTO {
   nama: string;
@@ -10,6 +10,6 @@ export class UpdateDosenDTO extends createDosenDTO {
   updated_at: Date;
 }
 
-export class ItemDetailDosenDTO extends createDosenDTO{
+export class ItemDetailDosenDTO extends createDosenDTO {
   id: number;
 }

@@ -10,22 +10,26 @@ import { DatabaseConfig } from 'database.config';
 import { DosenModule } from './dosen/dosen.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ServiceModule } from './service/service.module';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [config]
+      load: [config],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useClass: DatabaseConfig
+      useClass: DatabaseConfig,
     }),
     TypeOrmModule.forFeature([User]),
     MahasiswaModule,
     DosenModule,
     AuthModule,
-    UsersModule
+    UsersModule,
+    ServiceModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],
